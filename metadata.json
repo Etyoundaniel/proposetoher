@@ -1,0 +1,6 @@
+{
+  "name": "Propose To Her",
+  "description": "A considered way to plan the moment. Curated relationship experiences and bespoke marriage proposals.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

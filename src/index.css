@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Libre Baskerville", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-wine: #4b101d;
+  --color-wine-dark: #26070e;
+  --color-ink: #171515;
+  --color-ivory: #fbf7ef;
+  --color-paper: #fffdf9;
+  --color-gold: #c7a363;
+  --color-gold-light: #d8ba78;
+  --color-gold-lighter: #e1c381;
+  --color-rose: #bd827d;
+  --color-muted: #736966;
+  --color-line: #ded4c9;
+}
+
+:root {
+  --wine: #4b101d;
+  --wine-dark: #26070e;
+  --ink: #171515;
+  --ivory: #fbf7ef;
+  --paper: #fffdf9;
+  --gold: #c7a363;
+  --gold-light: #d8ba78;
+  --gold-lighter: #e1c381;
+  --rose: #bd827d;
+  --muted: #736966;
+  --line: #ded4c9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--ivory);
+  color: var(--ink);
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.font-display {
+  font-family: "Libre Baskerville", Georgia, Cambria, serif;
+}
+
+.hero-overlay {
+  background: linear-gradient(90deg, rgba(19, 8, 10, 0.91) 0%, rgba(19, 8, 10, 0.58) 48%, rgba(19, 8, 10, 0.14) 100%);
+}
+
+.hero-readability {
+  position: relative;
+  isolation: isolate;
+  padding: 1.25rem 1.5rem 1.5rem;
+  margin: -1.25rem 0 -1.5rem -1.5rem;
+  max-width: 44rem;
+  text-shadow: 0 2px 18px rgba(18, 7, 10, 0.42);
+}
+
+.hero-readability::before {
+  content: "";
+  position: absolute;
+  inset: -4rem -5rem -4rem -3rem;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 72% 64% at 30% 48%, rgba(19, 8, 10, 0.64) 0%, rgba(19, 8, 10, 0.38) 44%, rgba(19, 8, 10, 0) 78%);
+  filter: blur(9px);
+  opacity: 0.96;
+}
+
+.hero-readability::after {
+  content: "";
+  position: absolute;
+  inset: 0 -1rem 0 -1rem;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(19, 8, 10, 0.2), rgba(19, 8, 10, 0));
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  mask-image: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.78) 62%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.78) 62%, transparent 100%);
+}
+
+@media (max-width: 640px) {
+  .hero-readability {
+    padding: 1rem 1rem 1.25rem;
+    margin: -1rem 0 -1.25rem -1rem;
+  }
+  .hero-readability::before {
+    inset: -3rem -3rem -3rem -2rem;
+  }
+}
+
