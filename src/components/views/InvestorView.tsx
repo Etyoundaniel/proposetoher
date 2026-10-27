@@ -86,7 +86,7 @@ export const InvestorView: React.FC<InvestorViewProps> = ({ onNavigate }) => {
 
         {disclosureOpen && (
           <p className="max-w-3xl pb-6 text-xs leading-6 text-[#685f5a] animate-in fade-in duration-150">
-            Any market sizing, demand estimates, or expansion pathways shown in investor conversations should be clearly sourced or labelled illustrative. They are not guarantees of performance. Propose To Her operates within the high-end experiential gifting and luxury wedding-adjacent market segments.
+            Any market sizing, demand estimates, or expansion pathways shown in investor conversations should be clearly sourced or labelled illustrative. They are not guarantees of performance. yespropose operates within the high-end experiential gifting and luxury wedding-adjacent market segments.
           </p>
         )}
       </div>

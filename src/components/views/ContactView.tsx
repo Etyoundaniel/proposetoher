@@ -30,9 +30,9 @@ export const ContactView: React.FC<ContactViewProps> = () => {
     };
 
     try {
-      const existing = JSON.parse(localStorage.getItem('propose_to_her_inquiries') || '[]');
+      const existing = JSON.parse(localStorage.getItem('yespropose_inquiries') || localStorage.getItem('propose_to_her_inquiries') || '[]');
       existing.unshift(inquiry);
-      localStorage.setItem('propose_to_her_inquiries', JSON.stringify(existing));
+      localStorage.setItem('yespropose_inquiries', JSON.stringify(existing));
     } catch {
       // Ignore
     }

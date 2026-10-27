@@ -40,6 +40,7 @@ export interface VideoExperience {
 }
 
 export interface PlanningBrief {
+  id?: string;
   occasion: string;
   location: string;
   budget: string;

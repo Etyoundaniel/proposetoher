@@ -15,7 +15,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate }) => {
         Technology with a human sense of occasion.
       </h1>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-[#4c4541] font-light">
-        Propose To Her makes meaningful relationship experiences easier to discover, shape, and request. We believe the most consequential question of your life deserves calm consideration rather than chaotic logistics.
+        yespropose makes meaningful relationship experiences easier to discover, shape, and request. We believe the most consequential question of your life deserves calm consideration rather than chaotic logistics.
       </p>
 
       <div className="mt-14 grid gap-6 md:grid-cols-3">

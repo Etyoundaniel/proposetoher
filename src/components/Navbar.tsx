@@ -28,7 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
           aria-label="Go to home"
         >
           <span className="font-display block text-sm tracking-[.18em] font-bold text-white transition group-hover:text-[#d8ba78]">
-            PROPOSE TO HER
+            YESPROPOSE
           </span>
           <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[.17em] text-[#bdb5ae]">
             A considered way to plan the moment.

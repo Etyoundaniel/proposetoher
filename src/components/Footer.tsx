@@ -11,7 +11,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6">
         <div>
           <p className="text-xs tracking-wide text-[#bdb5ae]">
-            © Propose To Her. Plan with intention.
+            © yespropose. Plan with intention.
           </p>
           <p className="text-[11px] text-[#736966] mt-1">
             Handcrafted romantic moments, bespoke proposals & private dining experiences.

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { RouteId, PlanningBrief } from '../../types';
 import { OCCASIONS, LOCATIONS, BUDGET_RANGES, STYLES } from '../../data/experiences';
-import { Sparkles, CheckCircle, ArrowLeft, ArrowRight, Printer, Share2 } from 'lucide-react';
+import { CheckCircle, ArrowLeft, ArrowRight, Printer } from 'lucide-react';
 
 interface PlanViewProps {
   onNavigate: (route: RouteId) => void;
   selectedExperienceName?: string;
   initialBudgetVal?: number;
 }
+
+const NOTIFICATION_EMAIL = 'danietyoun@gmail.com';
+const DEFAULT_FORMCARRY_URL = 'https://formcarry.com/s/danietyoun';
 
 export const PlanView: React.FC<PlanViewProps> = ({
   onNavigate,
@@ -32,6 +35,12 @@ export const PlanView: React.FC<PlanViewProps> = ({
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedBrief, setSubmittedBrief] = useState<PlanningBrief | null>(null);
+
+  // Reference & Formcarry background endpoint
+  const [refNumber, setRefNumber] = useState('');
+  const [formcarryEndpoint] = useState<string>(() => {
+    return localStorage.getItem('yespropose_formcarry_endpoint') || ((import.meta as unknown as { env: Record<string, string> }).env?.VITE_FORMCARRY_ENDPOINT) || DEFAULT_FORMCARRY_URL;
+  });
 
   useEffect(() => {
     if (selectedExperienceName) {
@@ -86,11 +95,84 @@ export const PlanView: React.FC<PlanViewProps> = ({
     window.scrollTo({ top: 120, behavior: 'smooth' });
   };
 
+  // Dispatch all printed brief details to Formcarry quietly in background
+  const dispatchToFormcarry = async (brief: PlanningBrief, ref: string) => {
+    const targetUrl = formcarryEndpoint || DEFAULT_FORMCARRY_URL;
+    const timestamp = new Date().toLocaleString();
+
+    const formattedPrintout = `
+=============================================
+          YESPROPOSE PLANNING BRIEF
+=============================================
+Reference Code: ${ref}
+Timestamp: ${timestamp}
+Notification Recipient: ${NOTIFICATION_EMAIL}
+
+CLIENT CONTACT:
+- Full Name: ${brief.name}
+- Email: ${brief.email}
+- Phone: ${brief.phone || 'Not provided'}
+
+MOMENT SPECIFICATIONS:
+- Occasion: ${brief.occasion}
+- Location: ${brief.location}
+- Budget Target: ${brief.budget}
+- Mood / Style: ${brief.style}
+- Preferred Date: ${brief.preferredDate || 'Flexible'}
+- Preferred Time: ${brief.preferredTime || 'Flexible'}
+
+PRIVATE NOTES & PREFERENCES:
+- Partner Preferences: ${brief.partnerPreferences || 'None'}
+- Special Requests: ${brief.specialRequests || 'None'}
+=============================================
+Notification dispatched to ${NOTIFICATION_EMAIL} via Formcarry.
+`;
+
+    const payload = {
+      _to: NOTIFICATION_EMAIL,
+      notification_email: NOTIFICATION_EMAIL,
+      recipient: NOTIFICATION_EMAIL,
+      _replyto: brief.email,
+      _subject: `New yespropose Brief [#${ref}] - ${brief.occasion} for ${brief.name}`,
+      name: brief.name,
+      email: brief.email,
+      phone: brief.phone || 'N/A',
+      occasion: brief.occasion,
+      location: brief.location,
+      budget: brief.budget,
+      style: brief.style,
+      preferred_date: brief.preferredDate || 'Flexible',
+      preferred_time: brief.preferredTime || 'Flexible',
+      partner_preferences: brief.partnerPreferences || 'None',
+      special_requests: brief.specialRequests || 'None',
+      reference_number: ref,
+      printed_brief_details: formattedPrintout,
+      submitted_at: timestamp
+    };
+
+    try {
+      await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      // Background silent transmission
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep()) return;
 
+    const generatedRef = `YP-${Math.floor(100000 + Math.random() * 900000)}`;
+    setRefNumber(generatedRef);
+
     const newBrief: PlanningBrief = {
+      id: generatedRef,
       occasion,
       location,
       budget,
@@ -108,9 +190,9 @@ export const PlanView: React.FC<PlanViewProps> = ({
 
     // Save to local storage
     try {
-      const existing = JSON.parse(localStorage.getItem('propose_to_her_briefs') || '[]');
+      const existing = JSON.parse(localStorage.getItem('yespropose_briefs') || localStorage.getItem('propose_to_her_briefs') || '[]');
       existing.unshift(newBrief);
-      localStorage.setItem('propose_to_her_briefs', JSON.stringify(existing));
+      localStorage.setItem('yespropose_briefs', JSON.stringify(existing));
     } catch {
       // Ignore local storage quota errors
     }
@@ -118,6 +200,9 @@ export const PlanView: React.FC<PlanViewProps> = ({
     setSubmittedBrief(newBrief);
     setIsSubmitted(true);
     window.scrollTo({ top: 80, behavior: 'smooth' });
+
+    // Instantly transmit all details to Formcarry with danietyoun@gmail.com
+    dispatchToFormcarry(newBrief, generatedRef);
   };
 
   const steps = [
@@ -499,45 +584,102 @@ export const PlanView: React.FC<PlanViewProps> = ({
         </form>
       ) : (
         /* Success State */
-        <section className="mt-8 border border-[#d8c18d] bg-[#fffaf0] p-8 sm:p-12 text-center shadow-lg animate-in fade-in duration-300">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#f6ebcb] text-[#a67f42]">
-            <Sparkles size={28} />
+        <section className="mt-8 border border-[#ded4c9] bg-[#fffdf9] p-6 sm:p-10 text-center shadow-sm animate-in fade-in duration-300">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#f4ece1] text-[#4b101d] no-print">
+            <CheckCircle size={28} />
           </div>
-          <h2 className="font-display mt-5 text-2xl md:text-3xl font-bold text-[#4b101d]">
-            Your moment is taking shape.
+          <h2 className="font-display mt-4 text-2xl md:text-3xl font-bold text-[#4b101d] no-print">
+            Successful submission!
           </h2>
-          <p className="mx-auto mt-4 max-w-lg text-sm leading-7 text-[#685f5a]">
+          <p className="mx-auto mt-2 max-w-lg text-sm leading-7 text-[#685f5a] no-print">
             Thank you, {submittedBrief?.name}. A senior experience planner will review your brief for <strong>{submittedBrief?.occasion}</strong> in <strong>{submittedBrief?.location}</strong> and reach out via {submittedBrief?.email} within 24 hours.
           </p>
 
-          <div className="mx-auto mt-8 max-w-md bg-white border border-[#ded4c9] p-5 text-left text-xs space-y-2">
-            <p className="font-bold text-[#4b101d] uppercase tracking-wider text-[10px] pb-1 border-b border-[#f0e7dc]">
-              Brief Summary · Ref #{Math.floor(100000 + Math.random() * 900000)}
-            </p>
-            <p><strong>Occasion:</strong> {submittedBrief?.occasion}</p>
-            <p><strong>Location:</strong> {submittedBrief?.location}</p>
-            <p><strong>Budget Target:</strong> {submittedBrief?.budget}</p>
-            <p><strong>Mood:</strong> {submittedBrief?.style}</p>
-            <p><strong>Target Date:</strong> {submittedBrief?.preferredDate}</p>
+          {/* The Complete Printed Brief Card (Target of "Print Brief") */}
+          <div className="mx-auto mt-6 max-w-xl bg-white border border-[#ded4c9] p-6 text-left text-xs shadow-xs printable-brief">
+            <div className="flex items-center justify-between pb-3 border-b border-[#f0e7dc]">
+              <div>
+                <span className="font-display text-sm font-bold tracking-wider text-[#4b101d]">YESPROPOSE</span>
+                <span className="block text-[10px] text-[#8a7f78] uppercase tracking-wider">Planning Brief & Specifications</span>
+              </div>
+              <div className="text-right">
+                <span className="font-mono text-xs font-bold text-[#4b101d]">{refNumber}</span>
+                <span className="block text-[10px] text-[#8a7f78]">
+                  {new Date(submittedBrief?.createdAt || Date.now()).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+
+            {/* Core Specifications Grid */}
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4 border-b border-[#f0e7dc]">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#a67f42]">Occasion</span>
+                <p className="font-semibold text-sm text-[#171515] mt-0.5">{submittedBrief?.occasion}</p>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#a67f42]">Location</span>
+                <p className="font-semibold text-sm text-[#171515] mt-0.5">{submittedBrief?.location}</p>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#a67f42]">Budget Target</span>
+                <p className="font-semibold text-sm text-[#171515] mt-0.5">{submittedBrief?.budget}</p>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#a67f42]">Mood / Style</span>
+                <p className="font-semibold text-sm text-[#171515] mt-0.5">{submittedBrief?.style}</p>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#a67f42]">Target Date</span>
+                <p className="font-semibold text-sm text-[#171515] mt-0.5">{submittedBrief?.preferredDate || 'Flexible'}</p>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#a67f42]">Preferred Time</span>
+                <p className="font-semibold text-sm text-[#171515] mt-0.5">{submittedBrief?.preferredTime || 'Flexible'}</p>
+              </div>
+            </div>
+
+            {/* Private Notes & Preferences */}
+            {(submittedBrief?.partnerPreferences || submittedBrief?.specialRequests) && (
+              <div className="mt-4 space-y-3">
+                {submittedBrief?.partnerPreferences && (
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#a67f42]">Partner Preferences</span>
+                    <p className="text-xs text-[#4c4541] mt-0.5 leading-relaxed">
+                      {submittedBrief.partnerPreferences}
+                    </p>
+                  </div>
+                )}
+                {submittedBrief?.specialRequests && (
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#a67f42]">Special Requests & Notes</span>
+                    <p className="text-xs text-[#4c4541] mt-0.5 leading-relaxed">
+                      {submittedBrief.specialRequests}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
+          {/* Action Buttons */}
+          <div className="mt-8 flex flex-wrap justify-center items-center gap-4 no-print">
             <button
               type="button"
-              className="bg-[#4b101d] hover:bg-[#26070e] text-white px-6 py-3 text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+              className="bg-[#4b101d] hover:bg-[#26070e] text-white px-6 py-3 text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 shadow-sm"
+              onClick={() => window.print()}
+            >
+              <Printer size={14} /> Print Brief
+            </button>
+
+            <button
+              type="button"
+              className="border border-[#4b101d] text-[#4b101d] hover:bg-[#4b101d] hover:text-white px-6 py-3 text-xs font-bold uppercase tracking-wider transition cursor-pointer"
               onClick={() => {
                 onNavigate('experiences');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             >
-              Explore Experiences
-            </button>
-            <button
-              type="button"
-              className="border border-[#4b101d] text-[#4b101d] hover:bg-white px-5 py-3 text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5"
-              onClick={() => window.print()}
-            >
-              <Printer size={14} /> Print Brief
+              Explore Experiences →
             </button>
           </div>
         </section>

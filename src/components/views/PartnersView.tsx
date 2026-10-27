@@ -34,9 +34,9 @@ export const PartnersView: React.FC<PartnersViewProps> = () => {
     };
 
     try {
-      const existing = JSON.parse(localStorage.getItem('propose_to_her_partners') || '[]');
+      const existing = JSON.parse(localStorage.getItem('yespropose_partners') || localStorage.getItem('propose_to_her_partners') || '[]');
       existing.unshift(application);
-      localStorage.setItem('propose_to_her_partners', JSON.stringify(existing));
+      localStorage.setItem('yespropose_partners', JSON.stringify(existing));
     } catch {
       // Ignore
     }

@@ -97,7 +97,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ onNavigate }) => {
               <h2 id="chat-title" className="font-display text-base font-bold text-white tracking-wide">
                 How can we help?
               </h2>
-              <span className="text-[10px] text-[#d8ba78] block">Propose To Her Concierge</span>
+              <span className="text-[10px] text-[#d8ba78] block">yespropose Concierge</span>
             </div>
             <button
               id="chat-close"

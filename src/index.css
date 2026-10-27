@@ -96,3 +96,23 @@ body {
   }
 }
 
+@media print {
+  header, footer, nav, button, .no-print {
+    display: none !important;
+  }
+  body, main {
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .printable-brief {
+    box-shadow: none !important;
+    border: 1px solid #171515 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 1.5rem !important;
+  }
+}
+
