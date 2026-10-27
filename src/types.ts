@@ -23,6 +23,22 @@ export interface Experience {
   highlights?: string[];
 }
 
+export interface VideoExperience {
+  id: string;
+  instagramId: string;
+  url: string;
+  embedUrl: string;
+  title: string;
+  category: 'proposal' | 'music';
+  categoryLabel: string;
+  tag: string;
+  vibe: string;
+  description: string;
+  type: 'reel' | 'post';
+  highlights: string[];
+  poster?: string;
+}
+
 export interface PlanningBrief {
   occasion: string;
   location: string;

@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { RouteId, Experience } from '../../types';
+import React, { useState, useEffect, useMemo } from 'react';
+import { RouteId, VideoExperience } from '../../types';
 import { HERO_SLIDES, EXPERIENCES } from '../../data/experiences';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { VIDEO_EXPERIENCES } from '../../data/videoExperiences';
+import { VideoPlayerCard } from '../VideoPlayerCard';
+import { VideoModal } from '../VideoModal';
+import { ArrowRight, ChevronLeft, ChevronRight, Music } from 'lucide-react';
+import { RingIcon } from '../icons/RingIcon';
 
 interface HomeViewProps {
   onNavigate: (route: RouteId) => void;
@@ -32,6 +36,35 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const handleBudgetChange = (val: number) => {
     setSliderValue(val);
     onSetBudget(val);
+  };
+
+  const [homeVideoTab, setHomeVideoTab] = useState<'proposal' | 'music' | 'all'>('proposal');
+  const [homeTheaterVideo, setHomeTheaterVideo] = useState<VideoExperience | null>(null);
+
+  const featuredVideos = useMemo(() => {
+    return VIDEO_EXPERIENCES.filter(v => homeVideoTab === 'all' || v.category === homeVideoTab).slice(0, 3);
+  }, [homeVideoTab]);
+
+  const currentTheaterIndex = useMemo(() => {
+    if (!homeTheaterVideo) return -1;
+    return VIDEO_EXPERIENCES.findIndex(v => v.id === homeTheaterVideo.id);
+  }, [homeTheaterVideo]);
+
+  const handlePrevTheater = () => {
+    if (VIDEO_EXPERIENCES.length === 0) return;
+    const prevIdx = (currentTheaterIndex - 1 + VIDEO_EXPERIENCES.length) % VIDEO_EXPERIENCES.length;
+    setHomeTheaterVideo(VIDEO_EXPERIENCES[prevIdx]);
+  };
+
+  const handleNextTheater = () => {
+    if (VIDEO_EXPERIENCES.length === 0) return;
+    const nextIdx = (currentTheaterIndex + 1) % VIDEO_EXPERIENCES.length;
+    setHomeTheaterVideo(VIDEO_EXPERIENCES[nextIdx]);
+  };
+
+  const handlePlanWithVideo = (video: VideoExperience) => {
+    onCustomizeExperience(`${video.title} (${video.tag})`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const curatedCards = EXPERIENCES.slice(0, 3);
@@ -184,70 +217,96 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* Curated Directions Section */}
-      <section className="bg-[#f2ece3] px-6 py-20">
+      {/* Embedded Video Experiences Showcase */}
+      <section className="bg-[#f2ece3] px-4 sm:px-6 py-20">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-wrap items-end justify-between gap-5 border-b border-[#ded4c9] pb-8">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[.18em] text-[#a67f42]">
-                Curated directions
-              </p>
-              <h2 className="font-display mt-4 text-2xl md:text-3xl font-bold text-[#4b101d]">
-                Begin with a feeling.
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-[#4b101d]">
+                Video Experiences
               </h2>
+              <p className="mt-1 text-xs md:text-sm text-[#685f5a]">
+                Play directly on the platform.
+              </p>
             </div>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              {/* Category Switcher */}
+              <div className="inline-flex items-center bg-[#e5dacd] p-1 border border-[#ded4c9]">
+                <button
+                  type="button"
+                  onClick={() => setHomeVideoTab('proposal')}
+                  className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 ${
+                    homeVideoTab === 'proposal'
+                      ? 'bg-[#4b101d] text-white shadow-xs'
+                      : 'text-[#5c524c] hover:text-[#171515]'
+                  }`}
+                >
+                  <RingIcon size={13} />
+                  <span>Proposals</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHomeVideoTab('music')}
+                  className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 ${
+                    homeVideoTab === 'music'
+                      ? 'bg-[#4b101d] text-white shadow-xs'
+                      : 'text-[#5c524c] hover:text-[#171515]'
+                  }`}
+                >
+                  <Music size={12} />
+                  <span>Music</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHomeVideoTab('all')}
+                  className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition cursor-pointer ${
+                    homeVideoTab === 'all'
+                      ? 'bg-[#4b101d] text-white shadow-xs'
+                      : 'text-[#5c524c] hover:text-[#171515]'
+                  }`}
+                >
+                  All ({VIDEO_EXPERIENCES.length})
+                </button>
+              </div>
+
+              <button
+                type="button"
+                className="border-b border-[#4b101d] pb-1 text-xs font-bold uppercase tracking-wider text-[#4b101d] hover:text-[#26070e] transition cursor-pointer flex items-center gap-1"
+                onClick={() => {
+                  onNavigate('experiences');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                View all experiences <ArrowRight size={12} />
+              </button>
+            </div>
+          </div>
+
+          {/* Embedded Video Grid */}
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {featuredVideos.map(video => (
+              <VideoPlayerCard
+                key={video.id}
+                video={video}
+                onOpenTheater={v => setHomeTheaterVideo(v)}
+                onPlanWithVideo={handlePlanWithVideo}
+              />
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
             <button
               type="button"
-              className="border-b border-[#4b101d] pb-1 text-xs font-bold uppercase tracking-wider text-[#4b101d] hover:text-[#26070e] transition cursor-pointer"
+              className="bg-[#4b101d] hover:bg-[#320812] text-white px-7 py-3 text-xs font-bold uppercase tracking-wider transition cursor-pointer shadow-md inline-flex items-center gap-2"
               onClick={() => {
                 onNavigate('experiences');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             >
-              View all experiences
+              <span>View all videos</span>
+              <ArrowRight size={13} />
             </button>
-          </div>
-
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {curatedCards.map(item => (
-              <article
-                key={item.id}
-                className="overflow-hidden bg-[#fffdf9] border border-[#ded4c9] transition duration-300 hover:-translate-y-1 hover:shadow-xl group"
-              >
-                <div className="relative h-64 w-full overflow-hidden">
-                  <img
-                    loading="lazy"
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                    src={item.image}
-                    alt={item.title}
-                  />
-                  <div className="absolute top-4 left-4 bg-[#171515]/85 backdrop-blur-xs px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#d8ba78]">
-                    {item.badge}
-                  </div>
-                </div>
-                <div className="p-6">
-                  <p className="text-[11px] font-bold uppercase tracking-[.12em] text-[#a67f42]">
-                    {item.location} · {item.style}
-                  </p>
-                  <h3 className="font-display mt-2.5 text-xl font-bold text-[#4b101d]">
-                    {item.title}
-                  </h3>
-                  <p className="mt-3 text-xs leading-relaxed text-[#685f5a] line-clamp-2">
-                    {item.description}
-                  </p>
-                  <div className="mt-5 pt-4 border-t border-[#f0e7dc] flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#4b101d]">{item.price}</span>
-                    <button
-                      type="button"
-                      className="text-xs font-bold text-[#4b101d] underline underline-offset-4 hover:text-[#26070e] transition cursor-pointer"
-                      onClick={() => onSelectExperience(item.id)}
-                    >
-                      Explore direction
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
           </div>
         </div>
       </section>
@@ -382,6 +441,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </button>
         </div>
       </section>
+
+      {/* Home Theater Modal */}
+      {homeTheaterVideo && (
+        <VideoModal
+          video={homeTheaterVideo}
+          onClose={() => setHomeTheaterVideo(null)}
+          onPrev={handlePrevTheater}
+          onNext={handleNextTheater}
+          onPlanWithVideo={handlePlanWithVideo}
+          totalCount={VIDEO_EXPERIENCES.length}
+          currentIndex={currentTheaterIndex >= 0 ? currentTheaterIndex : 0}
+        />
+      )}
     </div>
   );
 };

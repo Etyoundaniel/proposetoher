@@ -83,6 +83,7 @@ export default function App() {
           <ExperiencesView
             onNavigate={navigateTo}
             onSelectExperience={handleSelectExperience}
+            onCustomizeExperience={handleCustomizeExperience}
           />
         )}
 

@@ -12,6 +12,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..900;1,9..40,300..900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+      window.onerror = function(msg, url, line, col, error) {
+        if (msg === 'Script error.' || !url || (typeof msg === 'string' && msg.indexOf('Script error') !== -1)) {
+          return true;
+        }
+        return false;
+      };
+      window.addEventListener('error', function(event) {
+        if (event.message === 'Script error.' || !event.filename) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      }, true);
+      window.addEventListener('unhandledrejection', function(event) {
+        if (event.reason && (event.reason.message === 'Script error.' || ('' + event.reason).indexOf('Script error') !== -1)) {
+          event.preventDefault();
+        }
+      });
+    </script>
   </head>
   <body class="bg-[#fbf7ef] text-[#171515] font-sans antialiased selection:bg-[#4b101d] selection:text-white">
     <div id="root"></div>

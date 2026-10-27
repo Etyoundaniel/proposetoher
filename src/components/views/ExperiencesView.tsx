@@ -1,181 +1,138 @@
 import React, { useState, useMemo } from 'react';
-import { RouteId, Experience } from '../../types';
-import { EXPERIENCES } from '../../data/experiences';
+import { RouteId, VideoExperience } from '../../types';
+import { VIDEO_EXPERIENCES } from '../../data/videoExperiences';
+import { VideoPlayerCard } from '../VideoPlayerCard';
+import { VideoModal } from '../VideoModal';
+import { Music, Layers } from 'lucide-react';
+import { RingIcon } from '../icons/RingIcon';
 
 interface ExperiencesViewProps {
   onNavigate: (route: RouteId) => void;
   onSelectExperience: (id: string) => void;
+  onCustomizeExperience?: (id: string) => void;
 }
 
 export const ExperiencesView: React.FC<ExperiencesViewProps> = ({
-  onSelectExperience
+  onNavigate,
+  onCustomizeExperience
 }) => {
-  const [occasionFilter, setOccasionFilter] = useState('');
-  const [locationFilter, setLocationFilter] = useState('');
-  const [styleFilter, setStyleFilter] = useState('');
-  const [showAll, setShowAll] = useState(false);
+  const [activeTab, setActiveTab] = useState<'all' | 'proposal' | 'music'>('all');
+  const [theaterVideo, setTheaterVideo] = useState<VideoExperience | null>(null);
 
-  // Extract unique filter choices
-  const occasions = useMemo(() => Array.from(new Set(EXPERIENCES.map(e => e.occasion))), []);
-  const locations = useMemo(() => Array.from(new Set(EXPERIENCES.map(e => e.location))), []);
-  const styles = useMemo(() => Array.from(new Set(EXPERIENCES.map(e => e.style))), []);
+  const filteredVideos = useMemo(() => {
+    if (activeTab === 'all') return VIDEO_EXPERIENCES;
+    return VIDEO_EXPERIENCES.filter(item => item.category === activeTab);
+  }, [activeTab]);
 
-  const filtered = useMemo(() => {
-    return EXPERIENCES.filter(item => {
-      if (occasionFilter && item.occasion !== occasionFilter) return false;
-      if (locationFilter && item.location !== locationFilter) return false;
-      if (styleFilter && item.style !== styleFilter) return false;
-      return true;
-    });
-  }, [occasionFilter, locationFilter, styleFilter]);
+  const currentModalIndex = useMemo(() => {
+    if (!theaterVideo) return -1;
+    return filteredVideos.findIndex(v => v.id === theaterVideo.id);
+  }, [theaterVideo, filteredVideos]);
 
-  const displayedExperiences = showAll ? filtered : filtered.slice(0, 6);
+  const handlePrevModal = () => {
+    if (filteredVideos.length === 0) return;
+    const prevIdx = (currentModalIndex - 1 + filteredVideos.length) % filteredVideos.length;
+    setTheaterVideo(filteredVideos[prevIdx]);
+  };
+
+  const handleNextModal = () => {
+    if (filteredVideos.length === 0) return;
+    const nextIdx = (currentModalIndex + 1) % filteredVideos.length;
+    setTheaterVideo(filteredVideos[nextIdx]);
+  };
+
+  const handlePlanWithVideo = (video: VideoExperience) => {
+    if (onCustomizeExperience) {
+      onCustomizeExperience(video.title);
+    } else {
+      onNavigate('plan');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const proposalCount = VIDEO_EXPERIENCES.filter(v => v.category === 'proposal').length;
+  const musicCount = VIDEO_EXPERIENCES.filter(v => v.category === 'music').length;
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      <p className="text-[11px] font-bold uppercase tracking-[.18em] text-[#a67f42]">
-        Experience edit
-      </p>
-      <h1 className="font-display mt-4 text-3xl md:text-4xl font-bold text-[#4b101d]">
-        Find your starting point.
-      </h1>
-      <p className="mt-4 max-w-xl text-sm leading-7 text-[#685f5a]">
-        A concise collection of directions to personalize. Every setting can be modified to mirror your relationship’s unique sentiment.
-      </p>
-
-      {/* Filter Toolbar */}
-      <div className="mt-9 grid gap-4 sm:grid-cols-3">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 md:py-12">
+      {/* Crisp Header - Minimal words */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#ded4c9]">
         <div>
-          <label htmlFor="filter-occasion-select" className="sr-only">Occasion</label>
-          <select
-            id="filter-occasion-select"
-            className="w-full border border-[#ded4c9] bg-[#fffdf9] p-3.5 text-xs text-[#171515] uppercase tracking-wider focus:border-[#4b101d] focus:outline-none cursor-pointer"
-            value={occasionFilter}
-            onChange={e => setOccasionFilter(e.target.value)}
-          >
-            <option value="">All occasions</option>
-            {occasions.map(occ => (
-              <option key={occ} value={occ}>{occ}</option>
-            ))}
-          </select>
+          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-[#4b101d]">
+            Video Experiences
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-[#685f5a]">
+            Play directly on the platform. Tap any video to start.
+          </p>
         </div>
 
-        <div>
-          <label htmlFor="filter-location-select" className="sr-only">Location</label>
-          <select
-            id="filter-location-select"
-            className="w-full border border-[#ded4c9] bg-[#fffdf9] p-3.5 text-xs text-[#171515] uppercase tracking-wider focus:border-[#4b101d] focus:outline-none cursor-pointer"
-            value={locationFilter}
-            onChange={e => setLocationFilter(e.target.value)}
-          >
-            <option value="">All locations</option>
-            {locations.map(loc => (
-              <option key={loc} value={loc}>{loc}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="filter-style-select" className="sr-only">Style</label>
-          <select
-            id="filter-style-select"
-            className="w-full border border-[#ded4c9] bg-[#fffdf9] p-3.5 text-xs text-[#171515] uppercase tracking-wider focus:border-[#4b101d] focus:outline-none cursor-pointer"
-            value={styleFilter}
-            onChange={e => setStyleFilter(e.target.value)}
-          >
-            <option value="">All styles</option>
-            {styles.map(sty => (
-              <option key={sty} value={sty}>{sty}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Results Meta */}
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-b border-[#ded4c9] pb-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-[#685f5a]">
-          {filtered.length} curated experience{filtered.length === 1 ? '' : 's'}
-        </p>
-
-        {(occasionFilter || locationFilter || styleFilter) && (
+        {/* Clean Filter Controls */}
+        <div className="inline-flex items-center bg-[#f0e7dc] p-1 border border-[#ded4c9]">
           <button
             type="button"
-            className="text-xs text-[#a67f42] hover:underline cursor-pointer"
-            onClick={() => {
-              setOccasionFilter('');
-              setLocationFilter('');
-              setStyleFilter('');
-            }}
+            onClick={() => setActiveTab('all')}
+            className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'all'
+                ? 'bg-[#4b101d] text-white shadow-xs'
+                : 'text-[#5c524c] hover:text-[#171515]'
+            }`}
           >
-            Reset filters
+            <Layers size={12} />
+            <span>All ({VIDEO_EXPERIENCES.length})</span>
           </button>
-        )}
-      </div>
 
-      {/* Experience Grid */}
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {displayedExperiences.map(item => (
-          <article
-            key={item.id}
-            className="flex flex-col justify-between overflow-hidden bg-[#fffdf9] border border-[#ded4c9] transition duration-300 hover:-translate-y-1 hover:shadow-xl group"
+          <button
+            type="button"
+            onClick={() => setActiveTab('proposal')}
+            className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'proposal'
+                ? 'bg-[#4b101d] text-white shadow-xs'
+                : 'text-[#5c524c] hover:text-[#171515]'
+            }`}
           >
-            <div>
-              <div className="relative h-60 w-full overflow-hidden">
-                <img
-                  loading="lazy"
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                  src={item.image}
-                  alt={item.title}
-                />
-                <div className="absolute top-3 left-3 bg-[#171515]/80 backdrop-blur-xs px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-[#d8ba78]">
-                  {item.badge}
-                </div>
-              </div>
+            <RingIcon size={13} />
+            <span>Proposals ({proposalCount})</span>
+          </button>
 
-              <div className="p-6">
-                <p className="text-[11px] font-bold uppercase tracking-[.12em] text-[#a67f42]">
-                  {item.location} · {item.style}
-                </p>
-                <h2 className="font-display mt-3 text-xl font-bold text-[#4b101d]">
-                  {item.title}
-                </h2>
-                <p className="mt-3 text-xs leading-relaxed text-[#685f5a]">
-                  {item.description}
-                </p>
-              </div>
-            </div>
-
-            <div className="px-6 pb-6 pt-3 border-t border-[#f0e7dc] flex items-center justify-between">
-              <span className="text-xs font-bold text-[#4b101d]">{item.price}</span>
-              <button
-                type="button"
-                className="text-xs font-bold text-[#4b101d] underline underline-offset-4 hover:text-[#26070e] transition cursor-pointer"
-                onClick={() => onSelectExperience(item.id)}
-              >
-                View experience
-              </button>
-            </div>
-          </article>
-        ))}
-
-        {filtered.length === 0 && (
-          <div className="col-span-full py-16 text-center text-sm text-[#685f5a] bg-white border border-[#ded4c9]">
-            <p className="font-medium text-base text-[#4b101d]">No experiences match this filter combination.</p>
-            <p className="mt-2 text-xs">Try selecting a different style or clearing your location choice.</p>
-            <button
-              type="button"
-              className="mt-5 text-xs font-bold uppercase tracking-wider text-[#4b101d] border-b border-[#4b101d] pb-0.5 cursor-pointer"
-              onClick={() => {
-                setOccasionFilter('');
-                setLocationFilter('');
-                setStyleFilter('');
-              }}
-            >
-              Clear all filters
-            </button>
-          </div>
-        )}
+          <button
+            type="button"
+            onClick={() => setActiveTab('music')}
+            className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'music'
+                ? 'bg-[#4b101d] text-white shadow-xs'
+                : 'text-[#5c524c] hover:text-[#171515]'
+            }`}
+          >
+            <Music size={12} />
+            <span>Music ({musicCount})</span>
+          </button>
+        </div>
       </div>
+
+      {/* Video Grid */}
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredVideos.map(video => (
+          <VideoPlayerCard
+            key={video.id}
+            video={video}
+            onOpenTheater={v => setTheaterVideo(v)}
+            onPlanWithVideo={handlePlanWithVideo}
+          />
+        ))}
+      </div>
+
+      {/* Theater View Modal */}
+      {theaterVideo && (
+        <VideoModal
+          video={theaterVideo}
+          onClose={() => setTheaterVideo(null)}
+          onPrev={handlePrevModal}
+          onNext={handleNextModal}
+          onPlanWithVideo={handlePlanWithVideo}
+          totalCount={filteredVideos.length}
+          currentIndex={currentModalIndex >= 0 ? currentModalIndex : 0}
+        />
+      )}
     </div>
   );
 };
