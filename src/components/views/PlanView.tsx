@@ -598,9 +598,15 @@ Notification dispatched to ${NOTIFICATION_EMAIL} via Formcarry.
           {/* The Complete Printed Brief Card (Target of "Print Brief") */}
           <div className="mx-auto mt-6 max-w-xl bg-white border border-[#ded4c9] p-6 text-left text-xs shadow-xs printable-brief">
             <div className="flex items-center justify-between pb-3 border-b border-[#f0e7dc]">
-              <div>
-                <span className="font-display text-sm font-bold tracking-wider text-[#4b101d]">YESPROPOSE</span>
-                <span className="block text-[10px] text-[#8a7f78] uppercase tracking-wider">Planning Brief & Specifications</span>
+              <div className="flex items-center gap-3">
+                <img
+                  src="/assets/aistudio/DYxTd-removebg-preview_f13f5fbb.png"
+                  alt="yespropose logo"
+                  className="h-8 w-auto object-contain"
+                />
+                <span className="block text-[10px] text-[#8a7f78] uppercase tracking-wider border-l border-[#ded4c9] pl-3">
+                  Planning Brief & Specifications
+                </span>
               </div>
               <div className="text-right">
                 <span className="font-mono text-xs font-bold text-[#4b101d]">{refNumber}</span>

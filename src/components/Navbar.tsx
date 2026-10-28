@@ -23,14 +23,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
       <nav aria-label="Primary navigation" className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
         <button
           type="button"
-          className="text-left text-white cursor-pointer group"
+          className="flex items-center gap-3.5 text-left text-white cursor-pointer group"
           onClick={() => handleNav('home')}
-          aria-label="Go to home"
+          aria-label="yespropose Home"
         >
-          <span className="font-display block text-sm tracking-[.18em] font-bold text-white transition group-hover:text-[#d8ba78]">
-            YESPROPOSE
-          </span>
-          <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[.17em] text-[#bdb5ae]">
+          <div className="flex items-center justify-center transition duration-200 group-hover:scale-105">
+            <img
+              src="/assets/aistudio/DYxTd-removebg-preview_f13f5fbb.png"
+              alt="yespropose logo"
+              className="h-12 sm:h-14 md:h-16 w-auto object-contain drop-shadow-[0_1px_8px_rgba(255,255,255,0.18)]"
+            />
+          </div>
+          <span className="hidden sm:block text-[10px] font-semibold uppercase tracking-[.18em] text-[#ded6d0] border-l border-white/20 pl-3">
             A considered way to plan the moment.
           </span>
         </button>
