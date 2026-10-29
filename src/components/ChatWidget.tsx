@@ -33,7 +33,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ onNavigate }) => {
       const newMsg: ChatMessage = {
         id: String(Date.now()),
         sender: 'assistant',
-        text: 'WhatsApp Concierge: You can chat directly with a lead planner on WhatsApp (+254 700 882 190) or submit a brief via our Plan page for priority scheduling.',
+        text: 'WhatsApp Concierge: You can chat directly with our lead planner on WhatsApp (+254 735 742 536) for immediate confidential planning.',
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages(prev => [...prev, newMsg]);
@@ -140,14 +140,16 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ onNavigate }) => {
                 >
                   Talk to a planner
                 </button>
-                <button
-                  type="button"
+                <a
+                  href="https://wa.me/254735742536?text=Hello%20yespropose%2C%20I%20would%20like%20to%20plan%20a%20moment"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="border border-[#c7a363] bg-[#fbf4e6] px-3 py-2 text-left text-xs font-bold text-[#4b101d] hover:bg-[#f5e9d2] transition cursor-pointer flex items-center justify-between"
                   onClick={() => handleActionClick('whatsapp')}
                 >
-                  <span>Continue on WhatsApp</span>
+                  <span>Chat on WhatsApp (+254 735 742 536)</span>
                   <span className="text-[10px] text-[#a67f42] uppercase">Direct</span>
-                </button>
+                </a>
               </div>
 
               {/* Message List */}

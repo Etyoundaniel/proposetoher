@@ -53,7 +53,20 @@ export const ContactView: React.FC<ContactViewProps> = () => {
         For planning, partnerships, and strategic enquiries. All client communications are treated with utmost confidentiality.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-10 max-w-2xl border border-[#ded4c9] bg-[#fffdf9] p-6 sm:p-10 shadow-sm" novalidate="">
+      {/* Direct WhatsApp Concierge Link */}
+      <div className="mt-8 flex flex-wrap items-center gap-4 text-xs">
+        <a
+          href="https://wa.me/254735742536?text=Hello%20yespropose%2C%20I%20would%20like%20to%20inquire%20about%20a%20proposal"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1faa51] text-white px-4 py-2.5 font-bold uppercase tracking-wider text-[11px] transition shadow-xs cursor-pointer"
+        >
+          <span>WhatsApp Concierge: +254 735 742 536</span>
+        </a>
+        <span className="text-xs text-[#736966]">Direct confidential planning line</span>
+      </div>
+
+      <form onSubmit={handleSubmit} className="mt-8 max-w-2xl border border-[#ded4c9] bg-[#fffdf9] p-6 sm:p-10 shadow-sm" noValidate>
         {errorMessage && (
           <p className="mb-6 border-l-2 border-[#9f3533] bg-[#fff1ed] p-3 text-xs text-[#7c2725]" role="alert">
             {errorMessage}

@@ -56,6 +56,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           >
             Contact
           </button>
+          <a
+            href="https://wa.me/254735742536?text=Hello%20yespropose%2C%20I%20would%20like%20to%20plan%20a%20moment"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#25D366] hover:text-[#5ce48f] transition font-medium"
+          >
+            WhatsApp (+254 735 742 536)
+          </a>
         </div>
       </div>
     </footer>

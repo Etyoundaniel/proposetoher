@@ -491,7 +491,7 @@ Notification dispatched to ${NOTIFICATION_EMAIL} via Formcarry.
                   </label>
                   <input
                     type="tel"
-                    placeholder="+254 700 000 000"
+                    placeholder="+254 735 742 536"
                     className="w-full border border-[#ded4c9] bg-[#fffdf9] p-3 text-sm focus:border-[#4b101d] focus:outline-none"
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
