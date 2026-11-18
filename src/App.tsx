@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { RouteId, Experience } from './types';
 import { EXPERIENCES } from './data/experiences';
 import { Navbar } from './components/Navbar';
@@ -56,6 +57,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fbf7ef] text-[#171515] font-sans pb-16 md:pb-0">
+      <Analytics />
       {/* Primary Sticky Header */}
       <Navbar currentRoute={currentRoute} onNavigate={navigateTo} />
 
