@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { RouteId, Experience } from './types';
 import { EXPERIENCES } from './data/experiences';
 import { Navbar } from './components/Navbar';
@@ -124,6 +125,9 @@ export default function App() {
           </button>
         </div>
       )}
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
